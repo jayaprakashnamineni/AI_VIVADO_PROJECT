@@ -1,0 +1,109 @@
+# ============================================================
+# Python
+# ============================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+.python-version
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ============================================================
+# Virtual environments (root and nested in app/)
+# ============================================================
+.venv/
+venv/
+env/
+ENV/
+app/.venv/
+
+# ============================================================
+# Dev scratch (duplicates llm_client behavior, no timeout guard)
+# ============================================================
+app/test_ollama.py
+
+# ============================================================
+# Vivado / XSim simulation artifacts
+# ============================================================
+*.jou
+*.log
+*.pb
+*.backup.jou
+*.backup.log
+*.wdb
+*.vcd
+*.fst
+*.xpr
+*.xdc
+*.dcp
+*.bit
+*.bin
+*.mcs
+xsim.dir/
+.xil/
+.Xil/
+ip_user_files/
+
+# ============================================================
+# Generated Vivado project database
+# ============================================================
+vivado_project/
+
+# ============================================================
+# Runtime output, generated code and archived runs
+# ============================================================
+/output/
+/generated/
+/runs/
+/test_ws/
+/_quarantine/
+/dcos/
+
+# ============================================================
+# Temp / scratch
+# ============================================================
+_tmp/
+tmp/
+temp/
+scratch/
+*.tmp
+
+# ============================================================
+# Local config / machine-specific
+# ============================================================
+.env
+.env.*
+*.local.json
+config.local.json
+
+# ============================================================
+# IDE / OS files (Windows + cross-platform)
+# ============================================================
+.vscode/
+.idea/
+*.suo
+*.user
+*.sln
+*.swp
+*.swo
+*~
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# ============================================================
+# Personal notes (stale review; not part of the product)
+# ============================================================
+/suggestionsofaivivao.txt
+
+# ============================================================
+# Legacy TCL scripts (unused by the pipeline, machine-specific)
+# ============================================================
+/scripts/

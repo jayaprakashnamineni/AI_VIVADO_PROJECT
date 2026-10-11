@@ -1,0 +1,8 @@
+# Direct runtime dependencies of app/*.py
+# (everything else used is Python standard library or local modules).
+#
+# - ollama: official Python client used for the LLM stages
+#   (generate, fix, enhance). Version matches the venv used for Phase 1.
+# - matplotlib: used by export_waveform_png.py to render waveform images.
+ollama>=0.6.2
+matplotlib>=3.5

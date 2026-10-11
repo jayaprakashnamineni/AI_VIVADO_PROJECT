@@ -1,0 +1,120 @@
+You are an expert Verilog Verification Engineer.
+
+The RTL design below is CORRECT and was verified by simulation.
+Your task is to improve ONLY the testbench by adding the missing
+required verification scenarios.
+
+CRITICAL RULE: Do NOT modify the RTL design. You must NOT return
+the design code. Return ONLY the improved testbench code.
+
+The simulation PASSED, but verification coverage analysis found
+that some required test scenarios were never exercised. If a
+scenario is not exercised, the same bug could go unnoticed in the
+future. You must add the missing scenarios to the testbench so
+that coverage requirements are fully satisfied.
+
+============================================================
+REQUIRED COVERAGE CASES TO ADD
+============================================================
+
+{missing_cases}
+
+Each missing case must be added as a complete self-checking
+scenario. For every case you add:
+
+1. Place this exact comment immediately above the new scenario
+   code:
+
+   // COVERAGE_CASE: <CASE_ID>
+
+   Use the exact CASE_ID listed above.
+
+2. Inside the scenario, after the stimulus is applied and the
+   check passes, print the exact line:
+
+   $display("COVERAGE_HIT: <CASE_ID>");
+
+3. Include a real assertion in the style used by the rest of the
+   testbench:
+
+   if (<value under test> !== <expected>) begin
+       $display("ASSERTION FAILED");
+       $display("CHECK: <description of behavior being tested>");
+       $display("TIME: %0t", $time);
+       $display("EXPECTED: <expected>");
+       $display("ACTUAL: %0d", <actual>);
+       $display("SIMULATION FAILED");
+       $finish;
+   end
+
+If a missing case genuinely does not apply to this design (for
+example, an enable-related case for a design that has no enable
+input), you may instead print COVERAGE_HIT for it while
+verifying the design reaches a stable valid state - but only if
+the scenario is truly applicable. Do not weaken existing checks.
+
+============================================================
+CURRENT DESIGN CODE (FOR REFERENCE ONLY - DO NOT RETURN)
+============================================================
+
+{design_code}
+
+============================================================
+CURRENT TESTBENCH CODE
+============================================================
+
+{tb_code}
+
+============================================================
+DESIGN CATEGORY
+============================================================
+
+{category}
+
+============================================================
+RULES
+============================================================
+
+1. Use Verilog-2001 syntax only (no SystemVerilog).
+2. Compatible with Vivado 2018.2.
+3. Do NOT return the RTL design code. Return only the testbench.
+4. The testbench module name must stay exactly:
+   {top_module}
+5. Do not rename signals or the DUT instance.
+6. Do not change the clock generation (always #N clk = ~clk).
+7. Do not change reset sequencing or init order.
+8. Keep every existing check exactly as-is.
+9. Do not remove ANY existing assertion or check.
+10. Add ONLY the missing scenarios listed above.
+11. Keep the same $monitor format string.
+12. End with "SIMULATION SUCCESSFUL" printed once when all
+    checks (existing and new) pass, then $finish.
+13. If any check fails, print "SIMULATION FAILED" after the
+    detailed assertion info, then $finish.
+14. The design is known-good: it already PASSED the existing
+    checks. Your added scenarios must NOT fail on correct
+    behavior. Compute the exact expected output after your
+    stimulus, accounting for the clock period and the positive
+    edge from the existing testbench. If you are not certain of
+    the exact value at the check time, choose a check that is
+    certainly true - for example, while reset is still asserted
+    the output must equal the reset value, or check the
+    invariant that holds throughout your scenario.
+15. Prefer to keep the scenario end state in a determinate
+    condition (for example return en to 0 after the scenario so
+    the counter holds).
+
+============================================================
+OUTPUT FORMAT
+============================================================
+
+Return EXACTLY ONE code block containing the COMPLETE corrected
+testbench (the entire module, all existing checks plus the added
+scenarios). Put it inside triple backticks:
+
+```verilog
+<complete testbench module>
+```
+
+Do not include any other code block and no explanation outside
+the single testbench code block.

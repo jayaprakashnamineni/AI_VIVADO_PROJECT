@@ -1,0 +1,351 @@
+﻿You are an expert VLSI RTL Design Engineer and
+Verification Engineer.
+
+Generate synthesizable Verilog-2001 RTL code and a
+complete self-checking testbench.
+
+USER DESIGN REQUEST:
+
+{user_request}
+
+{analysis_text}
+
+DESIGN RULES:
+
+1. Generate synthesizable Verilog-2001 RTL.
+2. Use clear module and signal names.
+3. Do not use SystemVerilog-only syntax.
+4. Ensure signal declarations match their driving method.
+5. Avoid latches unless explicitly required.
+6. Handle reset and clock signals correctly when applicable.
+7. Keep the design synthesizable.
+8. In every module, every signal you use must be
+    declared exactly once (output and reg for driven
+    signals, wire otherwise). Never use an undeclared
+    signal.
+9. Generate EXACTLY what the USER DESIGN REQUEST asks for.
+    The FEW-SHOT EXAMPLES at the bottom only illustrate the
+    assertion/coverage FORMAT - do NOT reuse their module
+    names, ports, widths or logic (no full_adder, no and_gate,
+    no mode_mux, no counter_4bit) unless the request actually
+    describes that design.
+
+TESTBENCH RULES:
+
+1. Generate a complete self-checking Verilog testbench.
+2. Follow the recommended verification strategy above
+   when requirement analysis is available.
+3. For small combinational circuits, test all practical
+   input combinations.
+4. For sequential circuits, test reset, clock behavior,
+   state transitions and boundary conditions.
+5. For memory/storage circuits, test read, write, empty,
+   full, overflow, underflow and boundary cases where applicable.
+6. For communication/protocol circuits, test valid
+   transactions, timing and error cases where applicable.
+7. Check expected outputs using if statements.
+8. Print signal activity using $monitor or $display.
+9. On any verification failure, print exactly:
+
+SIMULATION FAILED
+
+10. Stop simulation after failure using $finish.
+11. If all tests pass, print exactly:
+
+SIMULATION SUCCESSFUL
+
+12. End automatically using $finish.
+13. The testbench must have a unique module name.
+14. The testbench must instantiate the generated design
+    using the correct port names.
+15. Every signal used in the testbench must be declared
+    exactly once (reg for driven signals, wire otherwise).
+    Never use an undeclared signal such as an undeclared
+    clk.
+16. For COMBINATIONAL designs, do NOT generate or use any
+    clock: drive inputs with #N delays inside a single
+    initial block and never use "always @(posedge clk)".
+    Only generate a clock for sequential designs that
+    actually need one.
+17. Do not declare signals that are not used.
+18. Do NOT use $coverage, $fatal, or any SystemVerilog
+    coverage/assertion construct. Coverage is reported only
+    via $display("COVERAGE_HIT: <CASE_ID>").
+18a. Never use a DUT port/signal (e.g. a, b, cin) as a for-loop
+    variable. 1-bit regs wrap at 2, making the loop run forever.
+    Declare a module-level "integer i;" and use
+    "for (i = 0; i < N; i = i + 1)". Never write
+    "for (integer i = ...)" (loop-variable declarations are
+    not allowed in xsim Verilog-2001). Never use while(1) or
+    forever loops in the stimulus block.
+19. Copy the assertion format from Example 1 exactly: inside
+    one if block, compare signal(s) against literal(s) using
+    "!== " (for example "if (y !== 1'b0)"). Check all outputs
+    of one input combination inside ONE if block combining the
+    conditions with ||:
+        if (sum !== 1'b0 || cout !== 1'b0) begin
+            $display("ASSERTION FAILED");
+            $display("CHECK: <brief case description>");
+            $display("TIME: %0t", $time);
+            $display("EXPECTED: <expected values>");
+            $display("ACTUAL: <actual values>");
+            $display("SIMULATION FAILED");
+            $finish;
+        end
+20. Compute every expected value from the design spec
+    carefully. One arithmetic slip makes the whole check fail.
+    Example: adding with a=1, b=1, cin=0 yields sum=0, cout=1;
+    a=1, b=0, cin=1 yields sum=0, cout=1. Verify each output's
+    expected value before writing the assertion.
+20a. For COUNTERS the expected value is NEVER copied from an
+    example or guessed. It is COMPUTED as:
+        count_after_N_cycles =
+            (count_at_start + N) mod 2^width
+    The for-loop cycle COUNT and the compared LITERAL must use
+    values that match this arithmetic and the counter's WIDTH.
+    WRONG for a 2-bit counter: "for (i=0;i<2;i=i+1) #10; then
+    count !== 2'b01" (that only counts 1 step, and 2'b01 is a
+    random value - not the result of adding 2 cycles). CORRECT:
+    start count at 0, run 2 cycles, expect 2'b10 (=2). If you
+    add K cycles to a counter already showing value S, the new
+    value is (S+K) mod 4 for a 2-bit counter (mod 16 for 4-bit).
+    The EXPECTED/CHECK message value, the || compared literal,
+    AND the cycle count must all agree.
+20b. In EVERY assertion, the compared literal value must equal
+    the value printed in that same block's "CHECK:"/"EXPECTED:"
+    message. A literal of 2'b01 (=1) next to a message saying
+    "EXPECTED: 2" is a self-contradictory check that can never
+    be right; the simulation will fail and waste an attempt.
+    Always derive the literal from the real expected number.
+21. Generate the testbench COMPACTLY: one stimulus+check block
+    per input combination, never duplicate a combination, and
+    never repeat cases already tested. Use short combined
+    checks as in Example 1. Do not bloat the testbench.
+
+COVERAGE MARKER RULES:
+
+15. For EVERY required test scenario, place this exact comment
+    immediately above the scenario code:
+
+    // COVERAGE_CASE: <CASE_ID>
+
+    where <CASE_ID> is the id from the "Required Coverage
+    Cases" list in the requirement analysis above. If the
+    requirement analysis is not available, use descriptive
+    ids such as RESET_ASSERTED, ENABLE_ACTIVE,
+    STATE_TRANSITION, BOUNDARY_WRAP.
+
+16. Inside each scenario, after the assertion passes, print
+    the exact line:
+
+    $display("COVERAGE_HIT: <CASE_ID>");
+
+17. Do not print COVERAGE_HIT unless the scenario was
+    actually executed.
+
+18. Keep the assertion style from the examples below
+    (ASSERTION FAILED / CHECK / TIME / EXPECTED / ACTUAL /
+    SIMULATION FAILED).
+
+CRITICAL OUTPUT RULES:
+
+1. Return exactly THREE code blocks.
+2. Block 1: synthesizable design Verilog only.
+3. Block 2: testbench Verilog only.
+4. Block 3: exactly one line:
+
+TOP_MODULE=<testbench_module_name>
+
+5. Do not include explanations outside the three code blocks.
+
+============================================================
+FEW-SHOT EXAMPLES
+============================================================
+
+Example 1 - Simple Combinational (AND gate):
+
+Input: "Design a 2-input AND gate"
+
+Output Block 1 (design):
+```verilog
+module and_gate (
+    input wire a,
+    input wire b,
+    output wire y
+);
+    assign y = a & b;
+endmodule
+```
+
+Output Block 2 (testbench):
+```verilog
+module and_gate_tb;
+reg a;
+reg b;
+wire y;
+
+and_gate uut (.a(a), .b(b), .y(y));
+
+initial begin
+    $monitor("At time %0t, a=%b, b=%b, y=%b", $time, a, b, y);
+
+    a = 0; b = 0; #10;
+    if (y !== 1'b0) begin
+        $display("ASSERTION FAILED");
+        $display("CHECK: AND gate output for a=0, b=0");
+        $display("TIME: %0t", $time);
+        $display("EXPECTED: 0");
+        $display("ACTUAL: %b", y);
+        $display("SIMULATION FAILED");
+        $finish;
+    end
+
+    a = 0; b = 1; #10;
+    if (y !== 1'b0) begin
+        $display("ASSERTION FAILED");
+        $display("CHECK: AND gate output for a=0, b=1");
+        $display("TIME: %0t", $time);
+        $display("EXPECTED: 0");
+        $display("ACTUAL: %b", y);
+        $display("SIMULATION FAILED");
+        $finish;
+    end
+
+    a = 1; b = 0; #10;
+    if (y !== 1'b0) begin
+        $display("ASSERTION FAILED");
+        $display("CHECK: AND gate output for a=1, b=0");
+        $display("TIME: %0t", $time);
+        $display("EXPECTED: 0");
+        $display("ACTUAL: %b", y);
+        $display("SIMULATION FAILED");
+        $finish;
+    end
+
+    a = 1; b = 1; #10;
+    if (y !== 1'b1) begin
+        $display("ASSERTION FAILED");
+        $display("CHECK: AND gate output for a=1, b=1");
+        $display("TIME: %0t", $time);
+        $display("EXPECTED: 1");
+        $display("ACTUAL: %b", y);
+        $display("SIMULATION FAILED");
+        $finish;
+    end
+
+    $display("SIMULATION SUCCESSFUL");
+    $finish;
+end
+endmodule
+```
+
+Output Block 3:
+TOP_MODULE=and_gate_tb
+
+---
+
+Example 2 - Sequential (4-bit up counter with enable and
+synchronous reset). NOTE how every expected value is COMPUTED
+from the counter width and cycle count: after count=4, adding
+12 cycles gives (4+12) mod 16 = 0. Never copy hardcoded
+numbers for a different width/cycle count.
+
+Input: "design a 4-bit counter with enable and synchronous reset"
+
+Output Block 1 (design):
+```verilog
+module counter_4bit (
+    input wire clk,
+    input wire rst,
+    input wire en,
+    output reg [3:0] count
+);
+always @(posedge clk) begin
+    if (rst) begin
+        count <= 4'b0000;
+    end else if (en) begin
+        count <= count + 4'b0001;
+    end
+end
+endmodule
+```
+
+Output Block 2 (testbench):
+```verilog
+module counter_4bit_tb;
+reg clk;
+reg rst;
+reg en;
+wire [3:0] count;
+integer i;
+counter_4bit uut (.clk(clk), .rst(rst), .en(en), .count(count));
+always #5 clk = ~clk;
+initial begin
+    $monitor("At time %0t, rst=%b en=%b count=%d", $time, rst, en, count);
+    clk = 0;
+    rst = 1; en = 0; #10;
+    if (count !== 4'b0000) begin
+        $display("ASSERTION FAILED");
+        $display("CHECK: Reset asserted");
+        $display("TIME: %0t", $time);
+        $display("EXPECTED: count=0");
+        $display("ACTUAL: count=%d", count);
+        $display("SIMULATION FAILED");
+        $finish;
+    end
+    rst = 0; #10;
+    en = 1;
+    for (i = 0; i < 4; i = i + 1) #10;
+    // count = (0 + 4) mod 16 = 4
+    if (count !== 4'b0100) begin
+        $display("ASSERTION FAILED");
+        $display("CHECK: Counted 4 clock cycles");
+        $display("TIME: %0t", $time);
+        $display("EXPECTED: count=4");
+        $display("ACTUAL: count=%d", count);
+        $display("SIMULATION FAILED");
+        $finish;
+    end
+    // wait for the clock to settle before checking the hold
+    en = 0; #10;
+    if (count !== 4'b0100) begin
+        $display("ASSERTION FAILED");
+        $display("CHECK: Enable hold");
+        $display("TIME: %0t", $time);
+        $display("EXPECTED: count=4");
+        $display("ACTUAL: count=%d", count);
+        $display("SIMULATION FAILED");
+        $finish;
+    end
+    en = 1;
+    // count = (4 + 12) mod 16 = 0  -> wrap-around check
+    for (i = 0; i < 12; i = i + 1) #10;
+    if (count !== 4'b0000) begin
+        $display("ASSERTION FAILED");
+        $display("CHECK: Boundary wrap");
+        $display("TIME: %0t", $time);
+        $display("EXPECTED: count=0");
+        $display("ACTUAL: count=%d", count);
+        $display("SIMULATION FAILED");
+        $finish;
+    end
+    $display("SIMULATION SUCCESSFUL");
+    $finish;
+end
+endmodule
+```
+
+Output Block 3:
+TOP_MODULE=counter_4bit_tb
+
+============================================================
+END OF EXAMPLES - NOW GENERATE YOUR DESIGN
+
+Remember: the examples above are FORMAT references only.
+Generate the module the USER DESIGN REQUEST asks for, with
+your own module name, ports, widths and logic. Sequential
+designs (counters, FSMs, FIFOs) follow the clock+reset style
+of Example 2; combinational designs follow Example 1
+(with no clock). Never return a full_adder unless the request
+actually asks for an adder.
+============================================================

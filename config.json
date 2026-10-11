@@ -1,0 +1,25 @@
+{
+    "ollama_model": "qwen2.5-coder:7b",
+    "ollama_generate_model": "qwen2.5-coder:7b",
+    "ollama_fix_model": "qwen2.5-coder:3b",
+    "llm_timeout_seconds": 600,
+    "max_attempts": 6,
+    "max_pipeline_minutes": 10,
+    "vivado_path": "",
+    "max_fix_retries": 2,
+    "fix_change_strict_rtl_pct": 20,
+    "fix_change_strict_tb_pct": 30,
+    "fix_change_relaxed_rtl_pct": 50,
+    "fix_change_relaxed_tb_pct": 60,
+    "coverage": {
+        "exhaustive_input_limit": 8,
+        "max_coverage_improve_attempts": 2,
+        "thresholds": {
+            "COMBINATIONAL": 100,
+            "SEQUENTIAL": 100,
+            "MEMORY": 100,
+            "PROTOCOL": 100,
+            "COMPLEX": 100
+        }
+    }
+}
