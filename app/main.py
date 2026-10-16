@@ -11,7 +11,7 @@ from workspace import (
     generate_design_id, create_workspace
 )
 
-project_dir = Path(__file__).parent.parent
+project_dir = Path(__file__).resolve().parent.parent
 app_dir = project_dir / "app"
 runs_dir = project_dir / "runs"
 
@@ -241,7 +241,7 @@ if not user_request:
 
 if workspace_arg:
 
-    workspace = Path(workspace_arg)
+    workspace = Path(workspace_arg).resolve()
     workspace.mkdir(parents=True, exist_ok=True)
     design_id = workspace.name
 
@@ -250,7 +250,7 @@ if workspace_arg:
 else:
 
     design_id = generate_design_id(user_request)
-    workspace = create_workspace(project_dir, design_id)
+    workspace = create_workspace(project_dir, design_id).resolve()
 
 os.environ["AI_WORKSPACE"] = str(workspace)
 

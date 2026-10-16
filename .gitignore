@@ -48,6 +48,9 @@ xsim.dir/
 .xil/
 .Xil/
 ip_user_files/
+*.ip_user_files/
+open_wave.tcl
+generate_waveform.tcl
 
 # ============================================================
 # Generated Vivado project database

@@ -1,0 +1,9 @@
+# Keep only the example inputs in version control.
+# Any run against this workspace generates logs, coverage reports,
+# waveforms, xsim.dir/, .Xil/, the .xpr project and *.ip_user_files/
+# here; ignore everything except the three source files.
+*
+!.gitignore
+!design.v
+!tb.v
+!top_module.txt
